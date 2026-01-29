@@ -1,30 +1,75 @@
-import { Flame, Clock, ArrowUp } from "lucide-react";
+import { Flame, Clock, ArrowUp, MapPin } from "lucide-react";
+import { useState, type JSX } from "react";
 
-const FeedFilterBar = () => {
+type ScopeTab = "all" | "location" | "following";
+type SortTab = "hot" | "new" | "top";
+
+type Props = {
+  active: ScopeTab;
+};
+
+const FeedFilterBar = ({ active }: Props) => {
+  const [sort, setSort] = useState<SortTab>("hot");
+  const [change,setChange] = useState<ScopeTab>("all");
+
+  const leftScope: { key: ScopeTab; label: string }[] = [
+    { key: "all", label: "All" },
+    { key: "location", label: "Location" },
+    { key: "following", label: "Following" },
+  ];
+
+  const sortTabs: { key: SortTab; label: string; icon: JSX.Element }[] = [
+    { key: "hot", label: "Hot", icon: <Flame size={16} /> },
+    { key: "new", label: "New", icon: <Clock size={16} /> },
+    { key: "top", label: "Top", icon: <ArrowUp size={16} /> },
+  ];
+
   return (
-    <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-base-200 p-2">
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-base-200 p-3">
 
-      {/* Left filters */}
-      <div className="flex gap-2">
-        <button className="btn btn-sm btn-primary bg-blue-700">All</button>
-        <button className="btn btn-sm btn-ghost ">Location</button>
-        <button className="btn btn-sm btn-ghost">Following</button>
+      {/* LEFT: Feed scope */}
+      <div className="flex flex-wrap gap-2">
+        {leftScope.map((item) => (
+          <button
+            key={item.key}
+            onClick={() => setChange(item.key)}
+            className={`btn btn-sm ${
+              change === item.key
+                ? "bg-blue-700 text-white"
+                : "btn-ghost"
+            } focus:outline-none`}
+          >
+            {item.label}
+          </button>
+        ))}
       </div>
 
-      {/* Sort options */}
+      {/* CENTER: Pincode filter */}
+      <div className="flex items-center gap-2">
+        <MapPin size={16} className="opacity-60" />
+        <input
+          type="text"
+          placeholder="Pincode"
+          className="input input-sm input-bordered w-28 focus:border-blue-700"
+        />
+      </div>
+
+      {/* RIGHT: Sort */}
       <div className="flex gap-2">
-        <button className="btn btn-sm btn-ghost gap-1">
-          <Flame size={16} />
-          Hot
-        </button>
-        <button className="btn btn-sm btn-ghost gap-1">
-          <Clock size={16} />
-          New
-        </button>
-        <button className="btn btn-sm btn-ghost gap-1">
-          <ArrowUp size={16} />
-          Top
-        </button>
+        {sortTabs.map((item) => (
+          <button
+            key={item.key}
+            onClick={() => setSort(item.key)}
+            className={`btn btn-sm gap-1 ${
+              sort === item.key
+                ? "bg-blue-700 text-white"
+                : "btn-ghost"
+            } focus:outline-none`}
+          >
+            {item.icon}
+            {item.label}
+          </button>
+        ))}
       </div>
 
     </div>

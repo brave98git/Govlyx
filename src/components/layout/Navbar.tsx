@@ -1,8 +1,28 @@
 import { NavLink } from "react-router-dom";
 import { Search, Bell, MessageCircle, Plus, Menu } from "lucide-react";
 import { motion } from "framer-motion";
+import { Sun, Moon } from "lucide-react";
+import { useEffect, useState } from "react";
+
+import CreatePost from "../ui/CreatePost";
 
 const Navbar = () => {
+  const [openCreate, setOpenCreate] = useState(false);
+  const [theme, setTheme] = useState("light");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
+
   return (
     <motion.header
       className="fixed top-0 z-40 w-full border-b border-base-300 bg-base-200"
@@ -90,7 +110,10 @@ const Navbar = () => {
           </button>
 
           {/* CREATE */}
-          <button className="btn btn-sm hidden sm:flex gap-1 bg-blue-700 hover:bg-blue-800 text-white">
+          <button
+            onClick={() => setOpenCreate(true)}
+            className="btn btn-sm bg-blue-700 hidden sm:flex gap-1 text-white"
+          >
             <Plus size={16} />
             Create
           </button>
@@ -102,17 +125,31 @@ const Navbar = () => {
             <MessageCircle size={18} />
           </NavLink>
 
-          <button className="btn btn-ghost btn-sm hover:bg-blue-700/10">
+          <NavLink
+            to="/notifications"
+            className="btn btn-ghost btn-sm hover:bg-blue-700/10"
+          >
             <Bell size={18} />
+          </NavLink>
+
+          {/* THEME TOGGLE */}
+          <button
+            onClick={toggleTheme}
+            className="btn btn-ghost btn-sm hover:bg-blue-700/10"
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
           </button>
 
           {/* AVATAR */}
-          <div className="avatar placeholder">
+          <NavLink to="/profile" className="avatar placeholder">
             <div className="w-8 rounded-full bg-blue-700 text-white font-mono font-bold flex justify-center pt-1">
               S
             </div>
-          </div>
+          </NavLink>
         </div>
+        {/* CREATE POST MODAL */}
+        <CreatePost open={openCreate} onClose={() => setOpenCreate(false)} />
       </div>
     </motion.header>
   );

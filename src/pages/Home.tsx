@@ -5,6 +5,16 @@ import PollPostCard from "../components/post/PollPostCard";
 import EmptyState from "../components/ui/EmptyState";
 import Loader from "../components/ui/Loader";
 import PulseLoader from "../components/ui/Loader";
+import Skeleton from "../components/ui/Skeleton";
+
+const PostSkeleton = () => (
+  <div className="rounded-xl border border-base-300 bg-base-200 p-4 space-y-3">
+    <Skeleton className="h-4 w-1/3" />
+    <Skeleton className="h-3 w-full" />
+    <Skeleton className="h-3 w-5/6" />
+    <Skeleton className="h-32 w-full" />
+  </div>
+);
 
 const mockPosts = [
   {
@@ -30,8 +40,13 @@ const mockPosts = [
 const Home = () => {
   return (
     <div className="space-y-4">
+      {/* <Skeleton className="h-10 w-2/3 rounded-xl" />
+<Skeleton className="h-10 w-1/2 rounded-xl ml-auto" /> */}
+
       {/* Feed filters */}
-      <FeedFilterBar />
+      <div className="sticky top-2 z-30">
+        <FeedFilterBar />
+      </div>
 
       {/* Feed */}
       <div className="space-y-3">

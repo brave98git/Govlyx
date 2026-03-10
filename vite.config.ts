@@ -4,5 +4,19 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),tailwindcss()],
+  plugins: [react(), tailwindcss()],
+
+  define: {
+    // sockjs-client (CommonJS) references Node's `global` — polyfill for browser
+    global: "globalThis",
+  },
+
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8081', // [DEV_CONFIG] Updated to match backend. Original: 8080
+        changeOrigin: true,
+      },
+    },
+  },
 })

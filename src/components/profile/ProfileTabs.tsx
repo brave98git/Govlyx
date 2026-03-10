@@ -1,4 +1,4 @@
-type Tab = "posts" | "about" | "activity";
+type Tab = "posts" | "social" | "activity";
 
 type Props = {
   active: Tab;
@@ -7,8 +7,8 @@ type Props = {
 
 const ProfileTabs = ({ active, onChange }: Props) => {
   const tabs: { key: Tab; label: string }[] = [
-    { key: "posts", label: "Posts" },
-    { key: "about", label: "About" },
+    { key: "posts",    label: "Issues"   },
+    { key: "social",   label: "Social"   },
     { key: "activity", label: "Activity" },
   ];
 
@@ -18,7 +18,7 @@ const ProfileTabs = ({ active, onChange }: Props) => {
         <button
           key={tab.key}
           onClick={() => onChange(tab.key)}
-          className={`px-4 py-2 text-sm rounded-t-lg ${
+          className={`px-4 py-2 text-sm rounded-t-lg transition ${
             active === tab.key
               ? "bg-blue-700 text-white"
               : "opacity-70 hover:opacity-100"

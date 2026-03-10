@@ -3,6 +3,10 @@ type Props = {
   type?: "text" | "email" | "password" | "number";
   placeholder?: string;
   helperText?: string;
+  // Added for form control
+  name?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const AuthInput = ({
@@ -10,6 +14,9 @@ const AuthInput = ({
   type = "text",
   placeholder,
   helperText,
+  name,
+  value,
+  onChange,
 }: Props) => {
   return (
     <div className="space-y-1">
@@ -22,6 +29,9 @@ const AuthInput = ({
       <input
         type={type}
         placeholder={placeholder}
+        name={name}
+        value={value}
+        onChange={onChange}
         className="input input-bordered w-full focus:border-blue-700 focus:outline-none"
       />
 

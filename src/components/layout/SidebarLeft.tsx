@@ -2,20 +2,66 @@ import { NavLink } from "react-router-dom";
 import {
   Home,
   Users,
-  MessageCircle,
+  Dices,
   User,
   Settings,
 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const navItems = [
   { label: "Home", icon: Home, to: "/" },
   { label: "Communities", icon: Users, to: "/communities" },
-  { label: "Messages", icon: MessageCircle, to: "/messages" },
+  { label: "Quick Chat", icon: Dices, to: "/quick-chat" },
   { label: "Profile", icon: User, to: "/profile" },
   { label: "Settings", icon: Settings, to: "/settings" },
 ];
 
+// ---------------------------------------------------------------------------
+// Hook: fetch the currently authenticated user from GET /api/users/me
+//
+// IMPORTANT: User.getUsername() in Spring Security returns the EMAIL.
+// The display username lives in getActualUsername() → serialized as "actualUsername".
+// ---------------------------------------------------------------------------
+function useCurrentUser() {
+  const [username, setUsername] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // adjust key if your app uses a different one
+
+    fetch("/api/users/me", {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch user");
+        return res.json();
+      })
+      .then((body) => {
+        // ApiResponse<User> shape: { data: { actualUsername: "...", ... } }
+        // "actualUsername" comes from User.getActualUsername() (the real display name)
+        // "username" from User.getUsername() returns EMAIL — don't use that here
+        const user = body?.data;
+        setUsername(user?.actualUsername ?? user?.username ?? null);
+      })
+      .catch(() => setUsername(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { username, loading };
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 const SidebarLeft = () => {
+  const { username, loading } = useCurrentUser();
+
+  const avatarLetter = username ? username.charAt(0).toUpperCase() : "U";
+  const displayName = loading ? "Loading..." : (username ?? "Anonymous User");
+
   return (
     <aside className="flex h-full flex-col gap-6">
 
@@ -24,15 +70,16 @@ const SidebarLeft = () => {
         <div className="flex items-center gap-3">
           <div className="avatar placeholder">
             <div className="w-10 rounded-full bg-blue-700 text-primary-content">
-              <span className="flex font-bold justify-center pt-0.5 text-3xl">U</span>
+              <span className="flex font-bold justify-center pt-0.5 text-3xl">
+                {avatarLetter}
+              </span>
             </div>
           </div>
           <div>
-            <p className="font-semibold">Anonymous User</p>
-            <p className="text-sm opacity-60">Citizen</p>
+            <p className="font-semibold">{displayName}</p>
           </div>
         </div>
-      </div>  
+      </div>
 
       {/* Navigation */}
       <nav className="rounded-xl bg-base-200 p-2">
@@ -66,6 +113,17 @@ const SidebarLeft = () => {
           <li className="truncate">Education India</li>
           <li className="truncate">Baramati News</li>
         </ul>
+      </div>
+
+      {/* Official Updates - Mobile Only */}
+      <div className="rounded-xl bg-base-200 p-4 lg:hidden">
+        <h3 className="font-semibold text-sm mb-2">Official Updates</h3>
+        <NavLink
+          to="/department-feed"
+          className="text-sm text-blue-700 hover:underline"
+        >
+          View government announcements →
+        </NavLink>
       </div>
     </aside>
   );
